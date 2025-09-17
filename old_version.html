@@ -1,0 +1,540 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rural Health Residency Simulator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .scenario-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .pulse-dot {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <!-- Header -->
+    <div class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-md mx-auto px-4 py-3">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                        <span class="text-white font-bold text-lg">🏥</span>
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-bold text-gray-800">Rural Health Simulator</h1>
+                        <p class="text-xs text-gray-500">Sudan Healthcare Training</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div class="text-sm font-semibold text-blue-600" id="userProgress">Progress: 0%</div>
+                    <div class="text-xs text-gray-500">Level 1</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-md mx-auto px-4 py-6" id="mainContent">
+        <!-- Welcome Screen -->
+        <div id="welcomeScreen" class="fade-in">
+            <div class="bg-white rounded-2xl shadow-xl p-6 mb-6">
+                <div class="text-center mb-6">
+                    <div class="w-20 h-20 bg-gradient-to-r from-green-400 to-blue-500 rounded-full mx-auto mb-4 flex items-center justify-center">
+                        <span class="text-3xl">🌍</span>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-2">Welcome to Rural Health Training</h2>
+                    <p class="text-gray-600 text-sm">Experience real-world healthcare challenges in rural Sudan</p>
+                </div>
+
+                <div class="space-y-4 mb-6">
+                    <div class="flex items-center space-x-3 p-3 bg-blue-50 rounded-lg">
+                        <span class="text-blue-500">📋</span>
+                        <span class="text-sm text-gray-700">WHO Framework Assessment</span>
+                    </div>
+                    <div class="flex items-center space-x-3 p-3 bg-green-50 rounded-lg">
+                        <span class="text-green-500">👥</span>
+                        <span class="text-sm text-gray-700">Community Health Diagnosis</span>
+                    </div>
+                    <div class="flex items-center space-x-3 p-3 bg-purple-50 rounded-lg">
+                        <span class="text-purple-500">🎯</span>
+                        <span class="text-sm text-gray-700">Health Intervention Planning</span>
+                    </div>
+                </div>
+
+                <button onclick="startSimulation()" class="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 rounded-xl font-semibold hover:from-blue-600 hover:to-purple-700 transition-all duration-300 transform hover:scale-105">
+                    Start Simulation
+                </button>
+            </div>
+        </div>
+
+        <!-- Scenario Selection -->
+        <div id="scenarioSelection" class="hidden fade-in">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">Choose Your Assignment</h2>
+            <div class="space-y-4">
+                <div class="scenario-card rounded-2xl p-6 text-white cursor-pointer transform hover:scale-105 transition-all duration-300" onclick="selectScenario('gazira')">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-lg font-bold">Gazira State</h3>
+                        <span class="bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm">Rural District</span>
+                    </div>
+                    <p class="text-sm opacity-90 mb-3">Agricultural community facing water-borne diseases and malnutrition challenges</p>
+                    <div class="flex items-center space-x-2">
+                        <span class="pulse-dot w-2 h-2 bg-yellow-300 rounded-full"></span>
+                        <span class="text-xs">Active outbreak investigation needed</span>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-r from-orange-400 to-red-500 rounded-2xl p-6 text-white cursor-pointer transform hover:scale-105 transition-all duration-300" onclick="selectScenario('north')">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-lg font-bold">Northern State</h3>
+                        <span class="bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm">Desert Region</span>
+                    </div>
+                    <p class="text-sm opacity-90 mb-3">Remote desert community with limited healthcare access and seasonal migration</p>
+                    <div class="flex items-center space-x-2">
+                        <span class="pulse-dot w-2 h-2 bg-yellow-300 rounded-full"></span>
+                        <span class="text-xs">Maternal health crisis</span>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-r from-green-400 to-teal-500 rounded-2xl p-6 text-white cursor-pointer transform hover:scale-105 transition-all duration-300" onclick="selectScenario('kordufan')">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-lg font-bold">North Kordufan</h3>
+                        <span class="bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm">Pastoral Area</span>
+                    </div>
+                    <p class="text-sm opacity-90 mb-3">Nomadic pastoralist community with livestock-related health issues</p>
+                    <div class="flex items-center space-x-2">
+                        <span class="pulse-dot w-2 h-2 bg-yellow-300 rounded-full"></span>
+                        <span class="text-xs">Zoonotic disease surveillance</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Simulation Interface -->
+        <div id="simulationInterface" class="hidden fade-in">
+            <!-- Progress Bar -->
+            <div class="bg-white rounded-xl p-4 mb-4 shadow-lg">
+                <div class="flex items-center justify-between mb-2">
+                    <span class="text-sm font-semibold text-gray-700">Step <span id="currentStep">1</span> of 5</span>
+                    <span class="text-sm text-blue-600" id="stepProgress">20%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="bg-gradient-to-r from-blue-500 to-purple-600 h-2 rounded-full transition-all duration-500" id="progressBar" style="width: 20%"></div>
+                </div>
+            </div>
+
+            <!-- Current Scenario -->
+            <div class="bg-white rounded-2xl shadow-xl p-6 mb-4">
+                <div class="flex items-center space-x-3 mb-4">
+                    <div class="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                        <span class="text-white text-xl" id="scenarioIcon">🏥</span>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-gray-800" id="scenarioTitle">Community Assessment</h3>
+                        <p class="text-sm text-gray-500" id="scenarioLocation">Gazira State District</p>
+                    </div>
+                </div>
+
+                <div class="bg-blue-50 rounded-xl p-4 mb-4">
+                    <h4 class="font-semibold text-blue-800 mb-2">Situation Brief</h4>
+                    <p class="text-sm text-blue-700" id="situationBrief">You've arrived at a rural health center in Gazira State. The community has reported increased cases of diarrheal diseases. Your task is to conduct a community health assessment.</p>
+                </div>
+
+                <div class="mb-4">
+                    <h4 class="font-semibold text-gray-800 mb-3">Your Task</h4>
+                    <p class="text-sm text-gray-600 mb-4" id="taskDescription">Identify the key health cadres available in this rural health center and describe their roles in addressing the current health situation.</p>
+                </div>
+
+                <!-- Response Area -->
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Your Response:</label>
+                        <textarea id="userResponse" class="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none" rows="4" placeholder="Describe your assessment and approach..."></textarea>
+                    </div>
+
+                    <div class="flex space-x-3">
+                        <button onclick="submitResponse()" class="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 rounded-xl font-semibold hover:from-blue-600 hover:to-purple-700 transition-all duration-300">
+                            Submit Response
+                        </button>
+                        <button onclick="getHint()" class="px-4 py-3 bg-gray-100 text-gray-600 rounded-xl hover:bg-gray-200 transition-all duration-300">
+                            💡 Hint
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feedback Interface -->
+        <div id="feedbackInterface" class="hidden fade-in">
+            <div class="bg-white rounded-2xl shadow-xl p-6 mb-4">
+                <div class="text-center mb-4">
+                    <div class="w-16 h-16 bg-gradient-to-r from-green-400 to-blue-500 rounded-full mx-auto mb-3 flex items-center justify-center">
+                        <span class="text-2xl" id="feedbackIcon">✅</span>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-800" id="feedbackTitle">Response Reviewed</h3>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="bg-green-50 rounded-xl p-4">
+                        <h4 class="font-semibold text-green-800 mb-2">Model Response</h4>
+                        <p class="text-sm text-green-700" id="modelResponse">In this rural health center, key health cadres include: 1) Medical Officer - diagnoses and treats patients, 2) Nurse - provides direct patient care and health education, 3) Community Health Worker - conducts outreach and health promotion, 4) Environmental Health Officer - assesses water and sanitation issues, 5) Laboratory Technician - performs diagnostic tests for waterborne diseases.</p>
+                    </div>
+
+                    <div class="bg-blue-50 rounded-xl p-4">
+                        <h4 class="font-semibold text-blue-800 mb-2">Learning Points</h4>
+                        <div class="text-sm text-blue-700" id="learningPoints">
+                            <ul class="space-y-1">
+                                <li>• Each health cadre has specific roles in outbreak investigation</li>
+                                <li>• Community health workers are crucial for local knowledge</li>
+                                <li>• Environmental assessment is key for waterborne diseases</li>
+                                <li>• Multidisciplinary approach improves health outcomes</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="bg-yellow-50 rounded-xl p-4" id="personalFeedback">
+                        <h4 class="font-semibold text-yellow-800 mb-2">Your Performance</h4>
+                        <p class="text-sm text-yellow-700" id="performanceFeedback">Good identification of health cadres. Consider expanding on their specific roles in outbreak investigation and community engagement strategies.</p>
+                    </div>
+                </div>
+
+                <div class="flex space-x-3 mt-6">
+                    <button onclick="nextStep()" class="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 rounded-xl font-semibold hover:from-blue-600 hover:to-purple-700 transition-all duration-300">
+                        Continue to Next Step
+                    </button>
+                    <button onclick="reviewAgain()" class="px-4 py-3 bg-gray-100 text-gray-600 rounded-xl hover:bg-gray-200 transition-all duration-300">
+                        📚 Review
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Completion Screen -->
+        <div id="completionScreen" class="hidden fade-in">
+            <div class="bg-white rounded-2xl shadow-xl p-6 text-center">
+                <div class="w-20 h-20 bg-gradient-to-r from-green-400 to-blue-500 rounded-full mx-auto mb-4 flex items-center justify-center">
+                    <span class="text-3xl">🎉</span>
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800 mb-2">Simulation Complete!</h2>
+                <p class="text-gray-600 mb-6">You've successfully completed the rural health assessment simulation.</p>
+                
+                <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-4 mb-6">
+                    <h3 class="font-semibold text-gray-800 mb-2">Final Score</h3>
+                    <div class="text-3xl font-bold text-blue-600" id="finalScore">85%</div>
+                    <p class="text-sm text-gray-600 mt-1">Excellent performance in community health assessment</p>
+                </div>
+
+                <div class="flex space-x-3">
+                    <button onclick="restartSimulation()" class="flex-1 bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 rounded-xl font-semibold hover:from-blue-600 hover:to-purple-700 transition-all duration-300">
+                        Try Another Scenario
+                    </button>
+                    <button onclick="viewCertificate()" class="px-4 py-3 bg-gray-100 text-gray-600 rounded-xl hover:bg-gray-200 transition-all duration-300">
+                        📜 Certificate
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentScenario = '';
+        let currentStepIndex = 0;
+        let userScore = 0;
+        let totalSteps = 5;
+
+        const scenarios = {
+            gazira: {
+                title: "Gazira State Rural Health Assessment",
+                location: "Agricultural District, Gazira State",
+                icon: "🌾",
+                steps: [
+                    {
+                        title: "Health Cadre Identification",
+                        brief: "You've arrived at a rural health center in Gazira State. The community has reported increased cases of diarrheal diseases affecting children under 5.",
+                        task: "Identify the key health cadres available in this rural health center and describe their roles in addressing the current health situation.",
+                        modelResponse: "Key health cadres include: 1) Medical Officer - diagnoses and treats patients, leads outbreak investigation; 2) Nurse - provides direct patient care, administers treatments; 3) Community Health Worker - conducts community outreach, health education; 4) Environmental Health Officer - assesses water sources and sanitation; 5) Laboratory Technician - performs stool analysis and water testing; 6) Midwife - addresses maternal and child health needs.",
+                        learningPoints: ["Each cadre has specific expertise in outbreak response", "Community health workers provide crucial local knowledge", "Environmental assessment is essential for waterborne diseases", "Multidisciplinary teams improve health outcomes"]
+                    },
+                    {
+                        title: "Environmental Assessment",
+                        brief: "Initial reports suggest contaminated water sources. You need to assess environmental health determinants in the community.",
+                        task: "Describe how you would assess water sources, waste disposal systems, and other environmental factors contributing to the outbreak.",
+                        modelResponse: "Environmental assessment should include: 1) Water source mapping and testing (wells, rivers, storage); 2) Sanitation facility inspection (latrines, waste disposal); 3) Food safety practices observation; 4) Vector breeding site identification; 5) Household hygiene practices assessment; 6) Agricultural practices that may affect water quality.",
+                        learningPoints: ["Water quality testing is crucial for outbreak investigation", "Multiple environmental factors contribute to disease transmission", "Community practices significantly impact health outcomes", "Seasonal variations affect environmental health risks"]
+                    },
+                    {
+                        title: "Community Diagnosis",
+                        brief: "You've gathered initial data. Now conduct a comprehensive community health diagnosis using WHO framework.",
+                        task: "Perform a community diagnosis considering demographics, disease patterns, risk factors, and social determinants of health.",
+                        modelResponse: "Community diagnosis reveals: 1) Demographics - 60% under 15 years, high dependency ratio; 2) Disease burden - seasonal diarrheal outbreaks, malnutrition in children; 3) Risk factors - poor water quality, inadequate sanitation, food insecurity; 4) Social determinants - poverty, limited education, gender inequalities in healthcare access; 5) Health system gaps - insufficient staff, limited laboratory capacity.",
+                        learningPoints: ["WHO framework provides systematic approach to community assessment", "Social determinants significantly impact health outcomes", "Demographic patterns influence disease susceptibility", "Health system capacity affects intervention effectiveness"]
+                    },
+                    {
+                        title: "Health Education Planning",
+                        brief: "Based on your assessment, you need to plan health education interventions for the community.",
+                        task: "Design a culturally appropriate health education program addressing the identified health issues and risk factors.",
+                        modelResponse: "Health education program should include: 1) Water treatment and safe storage demonstrations; 2) Handwashing promotion with locally available materials; 3) Food safety practices training; 4) Nutrition education focusing on locally available foods; 5) Community dialogue sessions addressing cultural practices; 6) Training community volunteers as health educators; 7) Use of local languages and culturally relevant messaging.",
+                        learningPoints: ["Cultural sensitivity is essential for effective health education", "Community participation improves program sustainability", "Local resources and materials enhance accessibility", "Peer education models are effective in rural settings"]
+                    },
+                    {
+                        title: "Intervention Implementation",
+                        brief: "Time to implement your planned interventions and establish monitoring systems.",
+                        task: "Describe how you would implement the health interventions and establish a monitoring system to track progress.",
+                        modelResponse: "Implementation strategy: 1) Establish community health committees; 2) Train community health workers and volunteers; 3) Set up water treatment points and demonstrate proper use; 4) Conduct household visits for direct education; 5) Organize community meetings and focus group discussions; 6) Establish monitoring indicators (diarrheal disease incidence, water quality tests, behavior change metrics); 7) Create feedback mechanisms with community leaders; 8) Plan regular follow-up assessments.",
+                        learningPoints: ["Community ownership is crucial for intervention success", "Regular monitoring enables program adjustments", "Multiple intervention approaches address different risk factors", "Sustainability requires local capacity building"]
+                    }
+                ]
+            },
+            north: {
+                title: "Northern State Desert Health Challenge",
+                location: "Remote Desert Community, Northern State",
+                icon: "🏜️",
+                steps: [
+                    {
+                        title: "Remote Healthcare Access",
+                        brief: "You're in a remote desert community with limited healthcare infrastructure. Pregnant women face challenges accessing maternal care.",
+                        task: "Assess the healthcare delivery system and identify strategies to improve maternal health services in this remote setting.",
+                        modelResponse: "Healthcare assessment reveals: 1) Nearest hospital 150km away; 2) Mobile clinic visits monthly; 3) Traditional birth attendants provide most deliveries; 4) Limited emergency transport; 5) Seasonal migration affects continuity of care. Strategies include: training traditional birth attendants, establishing emergency communication systems, mobile health technology, community-based maternal waiting homes.",
+                        learningPoints: ["Geographic isolation creates unique healthcare challenges", "Traditional healthcare providers play crucial roles", "Mobile health solutions can bridge access gaps", "Community-based approaches are essential in remote areas"]
+                    },
+                    {
+                        title: "Seasonal Migration Impact",
+                        brief: "The community practices seasonal migration following water sources and grazing areas, affecting health service delivery.",
+                        task: "Analyze how seasonal migration patterns impact health outcomes and design adaptive health service delivery models.",
+                        modelResponse: "Migration impact analysis: 1) Interrupted vaccination schedules; 2) Lost to follow-up for chronic conditions; 3) Increased exposure to different disease environments; 4) Challenges in outbreak tracking. Adaptive strategies: mobile health teams following migration routes, portable health records, community health worker networks across regions, seasonal health camps at migration destinations.",
+                        learningPoints: ["Population mobility requires flexible health systems", "Continuity of care is challenging with mobile populations", "Inter-regional coordination is essential", "Technology can help maintain health records across locations"]
+                    },
+                    {
+                        title: "Water Scarcity Health Impact",
+                        brief: "Severe water scarcity affects hygiene practices and increases disease risk in the community.",
+                        task: "Evaluate the health impacts of water scarcity and develop water-efficient health interventions.",
+                        modelResponse: "Water scarcity impacts: 1) Compromised hygiene practices; 2) Increased waterborne diseases; 3) Dehydration risks, especially in children; 4) Competition for water resources. Interventions: water-efficient hygiene education, rainwater harvesting, water storage and treatment solutions, drought-resistant nutrition programs, community water management committees.",
+                        learningPoints: ["Water scarcity directly impacts multiple health outcomes", "Resource-efficient interventions are necessary", "Community water management is crucial", "Climate adaptation strategies are essential for health"]
+                    },
+                    {
+                        title: "Traditional Medicine Integration",
+                        brief: "The community relies heavily on traditional medicine and healers for healthcare needs.",
+                        task: "Develop a strategy to integrate traditional medicine practices with modern healthcare while ensuring safety and effectiveness.",
+                        modelResponse: "Integration strategy: 1) Map traditional healing practices and practitioners; 2) Identify safe and effective traditional remedies; 3) Train traditional healers in basic health concepts; 4) Establish referral systems between traditional and modern healthcare; 5) Develop protocols for managing complications; 6) Create mutual respect and collaboration frameworks; 7) Document and research traditional practices.",
+                        learningPoints: ["Traditional medicine is deeply rooted in community culture", "Integration requires mutual respect and understanding", "Safety protocols are essential when combining approaches", "Traditional healers can be valuable health system partners"]
+                    },
+                    {
+                        title: "Emergency Preparedness",
+                        brief: "Remote location and harsh environment require robust emergency preparedness systems.",
+                        task: "Design an emergency preparedness and response system suitable for this remote desert community.",
+                        modelResponse: "Emergency system components: 1) Community-based early warning systems; 2) Emergency communication networks (radio, satellite); 3) Trained community first responders; 4) Emergency supply caches strategically located; 5) Evacuation protocols and transport arrangements; 6) Coordination with regional emergency services; 7) Community emergency response teams; 8) Regular drills and preparedness training.",
+                        learningPoints: ["Remote communities need self-reliant emergency systems", "Communication is critical in emergency response", "Community training builds local capacity", "Regional coordination enhances response effectiveness"]
+                    }
+                ]
+            },
+            kordufan: {
+                title: "North Kordufan Pastoralist Health",
+                location: "Nomadic Pastoralist Community, North Kordufan",
+                icon: "🐪",
+                steps: [
+                    {
+                        title: "Zoonotic Disease Surveillance",
+                        brief: "The pastoralist community has close contact with livestock. Recent reports suggest possible zoonotic disease transmission.",
+                        task: "Establish a zoonotic disease surveillance system considering the human-animal interface in this pastoralist community.",
+                        modelResponse: "Surveillance system includes: 1) One Health approach integrating human, animal, and environmental health; 2) Community-based surveillance networks; 3) Training pastoralists to recognize disease signs in animals and humans; 4) Rapid reporting systems for suspected cases; 5) Laboratory capacity for zoonotic disease testing; 6) Coordination with veterinary services; 7) Risk communication strategies; 8) Regular health monitoring of high-risk individuals.",
+                        learningPoints: ["One Health approach is essential for zoonotic disease control", "Community participation improves surveillance effectiveness", "Early detection prevents disease spread", "Inter-sectoral collaboration is crucial"]
+                    },
+                    {
+                        title: "Livestock-Human Health Interface",
+                        brief: "Understanding the complex relationship between livestock health and human health in pastoralist communities.",
+                        task: "Analyze the livestock-human health interface and identify intervention points to reduce disease transmission risks.",
+                        modelResponse: "Interface analysis reveals: 1) Shared water sources between humans and animals; 2) Close living proximity increasing transmission risk; 3) Consumption of raw animal products; 4) Occupational exposure during animal care; 5) Traditional practices affecting disease risk. Interventions: safe animal handling training, water source protection, food safety education, personal protective equipment provision, vaccination programs for both humans and animals.",
+                        learningPoints: ["Human and animal health are interconnected in pastoralist systems", "Multiple transmission pathways exist", "Behavioral interventions are key to risk reduction", "Economic considerations affect intervention adoption"]
+                    },
+                    {
+                        title: "Mobile Health Service Delivery",
+                        brief: "The nomadic lifestyle requires innovative approaches to health service delivery that can move with the community.",
+                        task: "Design a mobile health service delivery model that addresses the healthcare needs of nomadic pastoralists.",
+                        modelResponse: "Mobile service model: 1) Mobile health units following seasonal migration patterns; 2) Community health workers embedded within pastoralist groups; 3) Telemedicine capabilities for remote consultations; 4) Portable diagnostic equipment; 5) Vaccination campaigns coordinated with migration schedules; 6) Emergency response protocols for remote locations; 7) Health record systems that travel with communities; 8) Partnerships with livestock markets for health service delivery.",
+                        learningPoints: ["Mobility requires flexible health service models", "Technology can overcome geographic barriers", "Community integration improves service uptake", "Timing services with community patterns increases effectiveness"]
+                    },
+                    {
+                        title: "Nutritional Assessment in Pastoralists",
+                        brief: "Pastoralist diets are heavily dependent on livestock products, with seasonal variations affecting nutritional status.",
+                        task: "Conduct a nutritional assessment and develop interventions addressing the unique dietary patterns and challenges of pastoralist communities.",
+                        modelResponse: "Nutritional assessment shows: 1) High protein intake from animal products; 2) Limited dietary diversity, especially vegetables and fruits; 3) Seasonal malnutrition during dry periods; 4) Micronutrient deficiencies (iron, vitamin A, folate); 5) Child malnutrition during livestock stress periods. Interventions: nutrition education using locally available foods, micronutrient supplementation, drought-resistant crop promotion, food preservation techniques, emergency nutrition support systems.",
+                        learningPoints: ["Pastoralist nutrition patterns are unique and seasonal", "Livestock health directly affects human nutrition", "Dietary diversification faces cultural and practical barriers", "Emergency nutrition support is crucial during crises"]
+                    },
+                    {
+                        title: "Community Health Governance",
+                        brief: "Establishing sustainable health governance structures within traditional pastoralist social systems.",
+                        task: "Develop a community health governance model that respects traditional authority structures while promoting modern health practices.",
+                        modelResponse: "Governance model includes: 1) Integration with traditional leadership structures; 2) Community health committees with representation from different clans/groups; 3) Traditional conflict resolution mechanisms for health disputes; 4) Women's participation in health decision-making; 5) Youth engagement in health promotion; 6) Coordination with government health systems; 7) Resource mobilization through traditional systems; 8) Accountability mechanisms respecting cultural norms.",
+                        learningPoints: ["Traditional governance systems can support health initiatives", "Cultural sensitivity is essential for sustainable programs", "Inclusive participation improves program legitimacy", "Bridging traditional and modern systems requires careful negotiation"]
+                    }
+                ]
+            }
+        };
+
+        function startSimulation() {
+            document.getElementById('welcomeScreen').classList.add('hidden');
+            document.getElementById('scenarioSelection').classList.remove('hidden');
+        }
+
+        function selectScenario(scenario) {
+            currentScenario = scenario;
+            currentStepIndex = 0;
+            document.getElementById('scenarioSelection').classList.add('hidden');
+            document.getElementById('simulationInterface').classList.remove('hidden');
+            loadCurrentStep();
+        }
+
+        function loadCurrentStep() {
+            const scenario = scenarios[currentScenario];
+            const step = scenario.steps[currentStepIndex];
+            
+            document.getElementById('scenarioIcon').textContent = scenario.icon;
+            document.getElementById('scenarioTitle').textContent = step.title;
+            document.getElementById('scenarioLocation').textContent = scenario.location;
+            document.getElementById('situationBrief').textContent = step.brief;
+            document.getElementById('taskDescription').textContent = step.task;
+            document.getElementById('userResponse').value = '';
+            
+            // Update progress
+            const progress = ((currentStepIndex + 1) / totalSteps) * 100;
+            document.getElementById('currentStep').textContent = currentStepIndex + 1;
+            document.getElementById('stepProgress').textContent = Math.round(progress) + '%';
+            document.getElementById('progressBar').style.width = progress + '%';
+            document.getElementById('userProgress').textContent = `Progress: ${Math.round(progress)}%`;
+        }
+
+        function submitResponse() {
+            const userResponse = document.getElementById('userResponse').value.trim();
+            if (!userResponse) {
+                alert('Please provide your response before submitting.');
+                return;
+            }
+            
+            showFeedback(userResponse);
+        }
+
+        function showFeedback(userResponse) {
+            const scenario = scenarios[currentScenario];
+            const step = scenario.steps[currentStepIndex];
+            
+            document.getElementById('simulationInterface').classList.add('hidden');
+            document.getElementById('feedbackInterface').classList.remove('hidden');
+            
+            document.getElementById('modelResponse').textContent = step.modelResponse;
+            
+            // Generate learning points
+            const learningPointsHtml = step.learningPoints.map(point => `<li>• ${point}</li>`).join('');
+            document.getElementById('learningPoints').innerHTML = `<ul class="space-y-1">${learningPointsHtml}</ul>`;
+            
+            // Generate personalized feedback
+            const feedback = generatePersonalizedFeedback(userResponse, step);
+            document.getElementById('performanceFeedback').textContent = feedback;
+            
+            // Update score
+            userScore += calculateStepScore(userResponse, step);
+        }
+
+        function generatePersonalizedFeedback(userResponse, step) {
+            const responseLength = userResponse.length;
+            const keyTerms = ['health', 'community', 'assessment', 'intervention', 'cadre', 'surveillance', 'education'];
+            const mentionedTerms = keyTerms.filter(term => userResponse.toLowerCase().includes(term));
+            
+            if (responseLength < 50) {
+                return "Good start! Consider providing more detailed analysis and specific examples in your response.";
+            } else if (mentionedTerms.length >= 3 && responseLength > 100) {
+                return "Excellent comprehensive response! You've demonstrated good understanding of key concepts and provided detailed analysis.";
+            } else if (mentionedTerms.length >= 2) {
+                return "Good response showing understanding of key concepts. Consider expanding on implementation strategies and potential challenges.";
+            } else {
+                return "Your response shows effort. Try to incorporate more specific health terminology and consider the WHO framework in your analysis.";
+            }
+        }
+
+        function calculateStepScore(userResponse, step) {
+            const baseScore = 15; // Base score per step
+            const responseLength = userResponse.length;
+            const keyTerms = ['health', 'community', 'assessment', 'intervention', 'cadre', 'surveillance', 'education'];
+            const mentionedTerms = keyTerms.filter(term => userResponse.toLowerCase().includes(term));
+            
+            let bonus = 0;
+            if (responseLength > 100) bonus += 3;
+            if (mentionedTerms.length >= 3) bonus += 5;
+            if (responseLength > 200) bonus += 2;
+            
+            return Math.min(baseScore + bonus, 20); // Max 20 points per step
+        }
+
+        function nextStep() {
+            currentStepIndex++;
+            
+            if (currentStepIndex >= totalSteps) {
+                showCompletion();
+            } else {
+                document.getElementById('feedbackInterface').classList.add('hidden');
+                document.getElementById('simulationInterface').classList.remove('hidden');
+                loadCurrentStep();
+            }
+        }
+
+        function showCompletion() {
+            document.getElementById('feedbackInterface').classList.add('hidden');
+            document.getElementById('completionScreen').classList.remove('hidden');
+            
+            const finalScore = Math.round((userScore / 100) * 100);
+            document.getElementById('finalScore').textContent = finalScore + '%';
+        }
+
+        function getHint() {
+            const hints = [
+                "Consider the WHO framework for community health assessment",
+                "Think about the specific challenges of rural healthcare delivery",
+                "Remember to address both immediate and long-term health needs",
+                "Consider cultural and social factors in your response",
+                "Think about resource limitations and practical solutions"
+            ];
+            
+            const randomHint = hints[Math.floor(Math.random() * hints.length)];
+            alert('💡 Hint: ' + randomHint);
+        }
+
+        function reviewAgain() {
+            document.getElementById('feedbackInterface').classList.add('hidden');
+            document.getElementById('simulationInterface').classList.remove('hidden');
+        }
+
+        function restartSimulation() {
+            currentStepIndex = 0;
+            userScore = 0;
+            document.getElementById('completionScreen').classList.add('hidden');
+            document.getElementById('scenarioSelection').classList.remove('hidden');
+        }
+
+        function viewCertificate() {
+            alert('🎓 Certificate of Completion\n\nCongratulations! You have successfully completed the Rural Health Residency Simulation for Sudan Healthcare Training.\n\nThis certificate validates your understanding of:\n• WHO Framework Assessment\n• Community Health Diagnosis\n• Rural Healthcare Delivery\n• Health Intervention Planning\n\nScore: ' + Math.round((userScore / 100) * 100) + '%');
+        }
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            // App is ready
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'980ac90e464561ad',t:'MTc1ODEzNDk4Ni4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
